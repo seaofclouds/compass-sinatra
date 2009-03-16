@@ -1,17 +1,17 @@
 require 'rubygems'
-require 'compass'
+require 'compass' #must be loaded before sinatra
 require 'sinatra'
+require 'haml'    #must be loaded after sinatra
 
-configure do
-  Compass.configuration do |config|
-    config.project_path = File.dirname(__FILE__)
-    config.sass_dir = "sass"
-  end
-end
+# set sinatra's variables
+set :app_file, __FILE__
+set :root, File.dirname(__FILE__)
+set :views, "views"
 
-get '/stylesheets/screen.css' do
+#
+get '/stylesheets/:name.css' do
   content_type 'text/css', :charset => 'utf-8'
-  sass :screen, :sass => Compass.sass_engine_options
+  sass(:"stylesheets/#{params[:name]}", :sass => { :load_paths => ( [ File.join(Sinatra::Application.views, 'stylesheets') ] + Compass::Frameworks::ALL.map { |f| f.stylesheets_directory } ) } )
 end
 
 get '/' do
